@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Commerce Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#f5f5f5; }
+    header { background:#222; color:white; padding:15px; }
+    nav ul { list-style:none; display:flex; gap:15px; }
+    nav ul li { display:inline; }
+    nav a { color:white; text-decoration:none; font-weight:bold; }
+    .container { padding:20px; }
+    .hidden { display:none; }
+    .card { background:white; padding:15px; border-radius:8px; margin:10px 0; }
+    input, textarea, select { width:100%; padding:8px; margin:5px 0 10px; }
+    button { padding:10px 15px; background:#0066ff; border:none; color:white; border-radius:5px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <ul>
+      <li><a href="#" onclick="show('home')">Home</a></li>
+      <li><a href="#" onclick="show('products')">Product Items</a></li>
+      <li><a href="#" onclick="show('orders')">Orders</a></li>
+      <li><a href="#" onclick="show('wishlist')">Wishlist</a></li>
+      <li><a href="#" onclick="show('reviews')">Comments & Reviews</a></li>
+      <li><a href="#" onclick="show('support')">Customer Care</a></li>
+      <li><a href="#" onclick="show('report')">Reporting</a></li>
+      <li><a href="#" onclick="show('about')">About Us</a></li>
+      <li><a href="#" onclick="show('contact')">Contact Us</a></li>
+      <li><a href="#" onclick="show('auth')">Login/Register</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- HOME -->
+  <section id="home" class="page">
+    <h2>Welcome to MyShop</h2>
+    <p>Your demo E-Commerce portal.</p>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products" class="page hidden">
+    <h2>Products</h2>
+    <div id="productList"></div>
+  </section>
+
+  <!-- ORDERS -->
+  <section id="orders" class="page hidden">
+    <h2>Your Orders</h2>
+    <div id="ordersList"></div>
+  </section>
+
+  <!-- WISHLIST -->
+  <section id="wishlist" class="page hidden">
+    <h2>Your Wishlist</h2>
+    <div id="wishlistList"></div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="page hidden">
+    <h2>Reviews</h2>
+
+    <h3>Write a Review</h3>
+    <select id="reviewProduct"></select>
+    <input id="reviewUser" placeholder="Your Name" />
+    <textarea id="reviewText" placeholder="Your Review"></textarea>
+    <button onclick="submitReview()">Submit</button>
+
+    <h3>All Reviews</h3>
+    <div id="reviewSection"></div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section id="support" class="page hidden">
+    <h2>Customer Care</h2>
+    <input id="sName" placeholder="Your Name" />
+    <input id="sEmail" placeholder="Your Email" />
+    <textarea id="sMsg" placeholder="Your Message"></textarea>
+    <button onclick="submitSupport()">Submit Ticket</button>
+  </section>
+
+  <!-- REPORTING -->
+  <section id="report" class="page hidden">
+    <h2>Reporting Dashboard</h2>
+    <div id="reportData"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="page hidden">
+    <h2>About Us</h2>
+    <p>Demo E-Commerce portal created for project requirements.</p>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="page hidden">
+    <h2>Contact Us</h2>
+    <p>Email: support@myshop.com</p>
+  </section>
+
+  <!-- AUTH -->
+  <section id="auth" class="page hidden">
+    <h2>Login / Register</h2>
+
+    <h3>Register</h3>
+    <input id="rName" placeholder="Full Name" />
+    <input id="rEmail" placeholder="Email" />
+    <input id="rPass" type="password" placeholder="Password" />
+    <input id="rCPass" type="password" placeholder="Confirm Password" />
+    <button onclick="register()">Register</button>
+
+    <h3>Login</h3>
+    <input id="lEmail" placeholder="Email" />
+    <input id="lPass" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </section>
+
+</div>
+
+<script>
+  // Sample Products
+  const products = [
+    { id:1, title:"Wireless Headphones", price:1299, reviews:[] },
+    { id:2, title:"Smart Watch", price:3499, reviews:[] },
+    { id:3, title:"Running Shoes", price:2599, reviews:[] }
+  ];
+
+  let orders = [];
+  let wishlist = [];
+
+  function show(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    if(id === 'products') loadProducts();
+    if(id === 'orders') loadOrders();
+    if(id === 'wishlist') loadWishlist();
+    if(id === 'reviews') loadReviews();
+    if(id === 'report') updateReport();
+  }
+
+  function loadProducts() {
+    const box = document.getElementById('productList');
+    box.innerHTML = '';
+    products.forEach(p => {
+      box.innerHTML += `<div class='card'>
+        <h3>${p.title}</h3>
+        <p>Price: ₹${p.price}</p>
+        <button onclick='addOrder(${p.id})'>Add to Orders</button>
+        <button onclick='addWishlist(${p.id})' style='background:#555;margin-left:5px'>Wishlist</button>
+      </div>`;
+    });
+  }
+
+  function addOrder(id) {
+    const item = products.find(p => p.id === id);
+    orders.push(item);
+    alert('Added to Orders');
+  }
+
+  function addWishlist(id) {
+    const item = products.find(p => p.id === id);
+    if (!wishlist.includes(item)) wishlist.push(item);
+    alert('Added to Wishlist');
+  }
+
+  function loadOrders() {
+    const box = document.getElementById('ordersList');
+    box.innerHTML = orders.length ? '' : 'No orders.';
+    orders.forEach(o => box.innerHTML += `<div class='card'><b>${o.title}</b> - ₹${o.price}</div>`);
+  }
+
+  function loadWishlist() {
+    const box = document.getElementById('wishlistList');
+    box.innerHTML = wishlist.length ? '' : 'Wishlist empty.';
+    wishlist.forEach(w => box.innerHTML += `<div class='card'><b>${w.title}</b> - ₹${w.price}</div>`);
+  }
+
+  function loadReviews() {
+    const select = document.getElementById('reviewProduct');
+    const section = document.getElementById('reviewSection');
+    select.innerHTML = '';
+    section.innerHTML='';
+
+    products.forEach(p => {
+      select.innerHTML += `<option value='${p.id}'>${p.title}</option>`;
+      section.innerHTML += `<div class='card'>
+        <h3>${p.title}</h3>
+        ${p.reviews.length ? p.reviews.map(r=>`<p><b>${r.user}</b>: ${r.text}</p>`).join('') : 'No reviews yet.'}
+      </div>`;
+    });
+  }
+
+  function submitReview() {
+    const id = Number(document.getElementById('reviewProduct').value);
+    const user = document.getElementById('reviewUser').value;
+    const text = document.getElementById('reviewText').value;
+
+    if(!user || !text) return alert('Fill all fields');
+
+    const product = products.find(p => p.id === id);
+    product.reviews.push({ user, text });
+    alert('Review added');
+    loadReviews();
+  }
+
+  function submitSupport() {
+    const n=document.getElementById('sName').value;
+    const e=document.getElementById('sEmail').value;
+    const m=document.getElementById('sMsg').value;
+    if(!n||!e||!m) return alert('Fill all fields');
+    alert('Support ticket submitted');
+  }
+
+  function updateReport() {
+    document.getElementById('reportData').innerHTML = `
+      <div class='card'>Total Orders: ${orders.length}</div>
+      <div class='card'>Wishlist Items: ${wishlist.length}</div>
+      <div class='card'>Revenue: ₹${orders.reduce((t,o)=>t+o.price,0)}</div>
+    `;
+  }
+
+  function register() {
+    const name = rName.value;
+    const email = rEmail.value;
+    const pass = rPass.value;
+    const cpass = rCPass.value;
+
+    if(!name || !email || !pass) return alert('Fill all fields');
+    if(pass !== cpass) return alert('Passwords do not match');
+
+    alert('Registration Successful');
+  }
+
+  function login() {
+    if(!lEmail.value || !lPass.value) return alert('Enter login details');
+    alert('Login Success');
+  }
+</script>
+
+</body>
+</html>
